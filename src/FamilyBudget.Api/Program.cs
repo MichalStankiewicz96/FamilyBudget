@@ -1,5 +1,7 @@
 
 using FamilyBudget.Application.Extensions;
+using FamilyBudget.Persistence;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -53,5 +55,7 @@ void RunApplication()
 
 void ApplyMigrations(WebApplication webApplication)
 {
-    //apply migrations
+    using var scope = webApplication.Services.CreateScope();
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    context.Database.Migrate();
 }
