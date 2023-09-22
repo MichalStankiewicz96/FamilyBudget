@@ -4,7 +4,6 @@ using FamilyBudget.Api.Extensions.Options;
 using FamilyBudget.Api.Extensions.Swagger;
 using FamilyBudget.Application.Extensions;
 using FamilyBudget.Persistence;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
