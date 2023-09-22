@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using MediatR;
+using FluentValidation;
 
 namespace FamilyBudget.Application.Extensions;
 
@@ -18,6 +19,7 @@ public static class IServiceCollectionExtensions
         services.AddMediatR(typeof(IApplicationMarker));
         services.AddMapper();
         services.AddFluentValidation();
+        services.AddValidatorsFromAssembly(typeof(IApplicationMarker).Assembly);
         services.AddDbContext(configuration);
         return services;
     }

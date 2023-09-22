@@ -19,10 +19,10 @@ public class UsersController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost]
-    [ProducesResponseType(typeof(CreateUserCommandResult), StatusCodes.Status200OK)]
-    public async Task<ActionResult> CreateAsync(CreateUserCommand request, CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(CreateUserResult), StatusCodes.Status200OK)]
+    public async Task<ActionResult> CreateUserAsync(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        var userId = await _mediator.Send(request, cancellationToken);
-        return Ok(new CreateUserCommandResult { UserId = userId });
+        var result = await _mediator.Send(request, cancellationToken);
+        return Ok(result);
     }
 }

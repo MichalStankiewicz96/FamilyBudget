@@ -6,7 +6,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace FamilyBudget.Application.Requests.Users.Commands.CreateUser;
-public sealed class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Guid>
+public sealed class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, CreateUserResult>
 {
     private readonly ApplicationDbContext _context;
 
@@ -15,7 +15,7 @@ public sealed class CreateUserCommandHandler : IRequestHandler<CreateUserCommand
         _context = context;
     }
 
-    public async Task<Guid> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    public async Task<CreateUserResult> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         if (await _context.Users.AnyAsync(x => x.Name == request.Name, cancellationToken))
         {
@@ -28,6 +28,6 @@ public sealed class CreateUserCommandHandler : IRequestHandler<CreateUserCommand
         };
         _context.Users.Add(userEntity);
         await _context.SaveChangesAsync(cancellationToken);
-        return userEntity.Id;
+        return new CreateUserResult { UserId = userEntity.Id };
     }
 }
