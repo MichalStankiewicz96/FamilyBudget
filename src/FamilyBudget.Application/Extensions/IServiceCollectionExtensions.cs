@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using MediatR;
 using FluentValidation;
+using FamilyBudget.Application.Services.JwtTokenServices;
 
 namespace FamilyBudget.Application.Extensions;
 
@@ -21,6 +22,7 @@ public static class IServiceCollectionExtensions
         services.AddFluentValidation();
         services.AddValidatorsFromAssembly(typeof(IApplicationMarker).Assembly);
         services.AddDbContext(configuration);
+        services.AddScoped<IJwtTokenService, JwtTokenService>();
         return services;
     }
 

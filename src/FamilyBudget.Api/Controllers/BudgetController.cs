@@ -1,5 +1,6 @@
 ﻿using FamilyBudget.Application.Requests.Budgets.Commands.CreateBudget;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FamilyBudget.Api.Controllers;
@@ -7,6 +8,7 @@ namespace FamilyBudget.Api.Controllers;
 [ApiController]
 [Produces("application/json")]
 [Route("api/Budgets")]
+[Authorize]
 public class BudgetController : ControllerBase
 {
     private readonly IMediator _mediator;
