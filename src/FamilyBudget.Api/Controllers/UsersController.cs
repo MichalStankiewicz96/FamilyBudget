@@ -22,7 +22,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(typeof(CreateUserResult), StatusCodes.Status200OK)]
     public async Task<ActionResult> CreateUserAsync(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        var userId = await _mediator.Send(request, cancellationToken);
-        return Ok(new CreateUserResult { UserId = userId });
+        var result = await _mediator.Send(request, cancellationToken);
+        return Ok(result);
     }
 }

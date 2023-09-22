@@ -28,9 +28,10 @@ public sealed class CreateUserCommandHandlerTests : BaseRequestTest
             .Create();
         var handler = new CreateUserCommandHandler(ApplicationDbContext);
         // Act
-        var userId = await handler.Handle(request, CancellationToken.None);
+        var result = await handler.Handle(request, CancellationToken.None);
         // Assert
-        var user = await ApplicationDbContext.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == userId);
+        result.Should().NotBeNull();
+        var user = await ApplicationDbContext.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == result.UserId);
         user.Should().NotBeNull();
         user!.Name.Should().Be(request.Name);
     }
