@@ -1,7 +1,12 @@
 ﻿using FamilyBudget.Persistence;
+using FluentValidation.AspNetCore;
+using Mapster;
+using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
+using MediatR;
 
 namespace FamilyBudget.Application.Extensions;
 
@@ -10,7 +15,9 @@ public static class IServiceCollectionExtensions
 {
     public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
     {
-        //register other services
+        services.AddMediatR(typeof(IApplicationMarker));
+        services.AddMapper();
+        services.AddFluentValidation();
         services.AddDbContext(configuration);
         return services;
     }
@@ -20,5 +27,13 @@ public static class IServiceCollectionExtensions
         services.AddDbContext<ApplicationDbContext>(o => o.UseNpgsql(configuration.GetConnectionString("FamilyBudgetDb")),
                 optionsLifetime: ServiceLifetime.Singleton)
             .AddDbContextFactory<ApplicationDbContext>();
+    }
+
+    private static void AddMapper(this IServiceCollection services)
+    {
+        var config = new TypeAdapterConfig();
+        config.Scan(Assembly.GetAssembly(typeof(IApplicationMarker))!);
+        services.AddSingleton(config);
+        services.AddSingleton<IMapper, ServiceMapper>();
     }
 }
