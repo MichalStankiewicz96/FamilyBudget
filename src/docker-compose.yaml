@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  db-main:
+  family-budget-postgre-sql:
     image: postgres:14.7-alpine3.17
     restart: always
     environment:
@@ -14,6 +14,21 @@ services:
       - db-main:/var/lib/postgresql/data
     networks:
       - postgres
+
+  family-budget-service:
+    image: family-budget-service
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 5001:80
+    environment:
+      ASPNETCORE_ENVIRONMENT: DockerCompose
+    networks:
+      - postgres
+    depends_on:
+      - family-budget-postgre-sql
 
 networks:
   postgres:
