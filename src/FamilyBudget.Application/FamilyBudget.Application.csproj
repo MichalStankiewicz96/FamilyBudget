@@ -16,10 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Requests\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\FamilyBudget.Persistence\FamilyBudget.Persistence.csproj" />
   </ItemGroup>
 
