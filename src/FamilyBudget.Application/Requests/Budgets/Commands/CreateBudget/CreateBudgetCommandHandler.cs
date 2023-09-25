@@ -6,7 +6,6 @@ using FamilyBudget.Persistence.Entities.Transaction;
 using FamilyBudget.Persistence.Entities.Users;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace FamilyBudget.Application.Requests.Budgets.Commands.CreateBudget;
 public sealed class CreateBudgetCommandHandler : IRequestHandler<CreateBudgetCommand, CreateBudgetResult>

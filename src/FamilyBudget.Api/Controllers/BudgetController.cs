@@ -30,11 +30,13 @@ public class BudgetController : ControllerBase
 
     [HttpGet]
     [ProducesResponseType(typeof(GetUserBudgetsQueryResponse), StatusCodes.Status200OK)]
-    public async Task<ActionResult> GetUserBudgetsAsync(CancellationToken cancellationToken)
+    public async Task<ActionResult> GetUserBudgetsAsync([FromQuery] int? pageNumber, [FromQuery] int? pagerSize, CancellationToken cancellationToken)
     {
         var request = new GetUserBudgetsQuery
         {
-            RequestingUserId = User.Claims.GetUserId()
+            RequestingUserId = User.Claims.GetUserId(),
+            PageNumber = pageNumber ?? 1,
+            PageSize = pagerSize ?? 5
         };
         var response = await _mediator.Send(request, cancellationToken);
         return Ok(response);

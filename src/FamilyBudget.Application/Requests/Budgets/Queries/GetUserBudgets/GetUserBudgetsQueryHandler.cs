@@ -1,4 +1,6 @@
-﻿using FamilyBudget.Persistence;
+﻿using FamilyBudget.Application.Behaviour.Pagination;
+using FamilyBudget.Persistence;
+using FamilyBudget.Persistence.Entities.Budgets;
 using MapsterMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -17,15 +19,41 @@ public sealed class GetUserBudgetsQueryHandler : IRequestHandler<GetUserBudgetsQ
 
     public async Task<GetUserBudgetsQueryResponse> Handle(GetUserBudgetsQuery request, CancellationToken cancellationToken)
     {
-        var budgets = await _context.BudgetMembers.Where(x => x.UserId == request.RequestingUserId)
+        var budgetEntities = _context.BudgetMembers.Where(x => x.UserId == request.RequestingUserId)
             .Include(x => x.Budget)
+            .ThenInclude(b => b!.Transactions)
             .AsNoTracking()
-            .Select(x => x.Budget).ToListAsync(cancellationToken);
+            .Select(x => x.Budget)
+            .OrderBy(x => x!.Description);
+        var budgets = new List<BudgetDto>();
+        var pagedBudgets = PagedResponse<BudgetEntity>.ToPaged(budgetEntities!, request.PageNumber, request.PageSize);
+        foreach (var budget in pagedBudgets)
+        {
+            var groupedIncome = budget.Transactions.Where(x => x.Amount > 0).GroupBy(x => x.Category).ToList();
+            var groupedExpenses = budget.Transactions.Where(x => x.Amount < 0).GroupBy(x => x.Category).ToList();
+            var budgetDto = _mapper.Map<BudgetDto>(budget);
+            budgetDto.Income = groupedIncome.Select(x => new BudgetGroupedTransactionDto
+            {
+                Category = x.Key,
+                Transactions = _mapper.Map<TransactionDto[]>(x.ToArray())
+            }).ToArray();
+            budgetDto.Expenses = groupedExpenses.Select(x => new BudgetGroupedTransactionDto
+            {
+                Category = x.Key,
+                Transactions = _mapper.Map<TransactionDto[]>(x.ToArray())
+            }).ToArray();
+            budgets.Add(budgetDto);
+        }
         var response = new GetUserBudgetsQueryResponse
         {
-            Budgets = _mapper.Map<BudgetDto[]>(budgets)
+            CurrentPage = pagedBudgets.CurrentPage,
+            TotalPages = pagedBudgets.TotalPages,
+            PageSize = pagedBudgets.PageSize,
+            TotalCount = pagedBudgets.TotalCount,
+            HasPrevious = pagedBudgets.HasPrevious,
+            HasNext = pagedBudgets.HasNext,
+            Budgets = budgets.ToArray()
         };
         return response;
     }
 }
-
