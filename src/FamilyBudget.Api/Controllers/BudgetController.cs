@@ -1,4 +1,6 @@
-﻿using FamilyBudget.Application.Requests.Budgets.Commands.CreateBudget;
+﻿using FamilyBudget.Api.Extensions.Auth;
+using FamilyBudget.Application.Requests.Budgets.Commands.CreateBudget;
+using FamilyBudget.Application.Requests.Budgets.Queries.GetUserBudgets;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,5 +26,17 @@ public class BudgetController : ControllerBase
     {
         var result = await _mediator.Send(request, cancellationToken);
         return Ok(result);
+    }
+
+    [HttpGet]
+    [ProducesResponseType(typeof(GetUserBudgetsQueryResponse), StatusCodes.Status200OK)]
+    public async Task<ActionResult> GetUserBudgetsAsync(CancellationToken cancellationToken)
+    {
+        var request = new GetUserBudgetsQuery
+        {
+            RequestingUserId = User.Claims.GetUserId()
+        };
+        var response = await _mediator.Send(request, cancellationToken);
+        return Ok(response);
     }
 }
