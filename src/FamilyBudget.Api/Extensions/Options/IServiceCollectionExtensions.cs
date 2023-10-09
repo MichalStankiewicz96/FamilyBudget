@@ -1,4 +1,5 @@
-﻿using FamilyBudget.Application.Configuration.Options;
+﻿using FamilyBudget.Api.HostedServices;
+using FamilyBudget.Application.Configuration.Options;
 
 namespace FamilyBudget.Api.Extensions.Options;
 
@@ -9,5 +10,11 @@ public static class IServiceCollectionExtensions
     {
         services.Configure<JwtOptions>(configuration.GetSection("JwtOptions"));
         return configuration;
+    }
+
+    public static IServiceCollection AddHostedServices(this IServiceCollection services)
+    {
+        services.AddHostedService<DatabaseMigrationService>();
+        return services;
     }
 }

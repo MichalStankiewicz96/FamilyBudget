@@ -3,8 +3,6 @@ using FamilyBudget.Api.Authentication;
 using FamilyBudget.Api.Extensions.Options;
 using FamilyBudget.Api.Extensions.Swagger;
 using FamilyBudget.Application.Extensions;
-using FamilyBudget.Persistence;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -36,6 +34,7 @@ void RunApplication()
     builder.Services.AddApplicationOptions(builder.Configuration);
     builder.Services.AddApplication(builder.Configuration);
     builder.Services.AddAuthenticationExtension(builder.Configuration);
+    builder.Services.AddHostedServices();
 
     builder.Services.AddControllers();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -43,8 +42,6 @@ void RunApplication()
     builder.Services.AddSwagger();
 
     var app = builder.Build();
-
-    ApplyMigrations(app);
 
     // Configure the HTTP request pipeline.
     if (!app.Environment.IsProduction())
@@ -55,11 +52,4 @@ void RunApplication()
     app.UseAuthorization();
     app.MapControllers();
     app.Run();
-}
-
-void ApplyMigrations(WebApplication webApplication)
-{
-    using var scope = webApplication.Services.CreateScope();
-    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    context.Database.Migrate();
 }
